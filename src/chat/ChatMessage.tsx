@@ -1,7 +1,7 @@
 import type { Message } from "./types";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import AgentforceLogo from "@/components/AgentforceLogo";
+import HerokuIcon from "@/components/HerokuIcon";
 
 export default function ChatMessage({
   type,
@@ -11,8 +11,6 @@ export default function ChatMessage({
   subtype,
   handleResponse,
 }: Message & { handleResponse: (response: boolean) => void }) {
-  console.log("handleResponse:", handleResponse);
-  console.log("Subtype:", subtype);
   
   if (type === "ai") {
     return (
@@ -79,13 +77,14 @@ export default function ChatMessage({
         </div>
         
         <div className="flex-shrink-0">
-          <Image
-            className="w-8 h-8 rounded-full object-cover"
-            width={32}
-            height={32}
-            src="/images/user.png"
-            alt="User"
-          />
+          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+            <HerokuIcon
+              className=""
+              width={20}
+              height={20}
+              alt="User"
+            />
+          </div>
         </div>
       </div>
     );
