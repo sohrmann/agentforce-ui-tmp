@@ -70,8 +70,8 @@ export default function ChatBubble({
             md:h-auto md:w-auto
             ${
               isExpanded
-                ? "md:max-w-4xl md:h-[75vh] md:mx-auto md:rounded-xl md:relative md:top-1/2 md:-translate-y-1/2"
-                : "md:w-[480px] md:h-[50vh] md:max-h-[calc(100vh-1rem)] md:rounded-xl"
+                ? "md:max-w-4xl md:h-[75dvh] md:mx-auto md:rounded-xl md:relative md:top-1/2 md:-translate-y-1/2"
+                : "md:w-[480px] md:h-[50dvh] md:max-h-[calc(100vh-1rem)] md:rounded-xl"
             }
           `}
           >
