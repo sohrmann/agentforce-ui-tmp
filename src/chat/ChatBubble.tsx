@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatContainer from "./ChatContainer";
 import { useChat } from "./ChatContext";
 import AgentforceLogo from "@/components/AgentforceLogo";
@@ -17,7 +17,23 @@ export default function ChatBubble({
   agentName,
 }: ChatBubbleProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(0);
   const { isOpen, hasNotification, openChat, closeChat } = useChat();
+
+  useEffect(() => {
+    const updateHeight = () => {
+      setViewportHeight(window.innerHeight);
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+    };
+  }, []);
 
   // Reset expanded state when chat is closed
   const handleClose = () => {
@@ -60,7 +76,10 @@ export default function ChatBubble({
         >
           {/* Backdrop - only for desktop expanded */}
           {isExpanded && (
-            <div className="hidden md:block absolute inset-0 bg-black/20 backdrop-blur-sm" />
+            <div 
+              className="hidden md:block absolute inset-0 bg-black/20 backdrop-blur-sm cursor-pointer" 
+              onClick={() => setIsExpanded(false)}
+            />
           )}
 
           <div
@@ -70,10 +89,18 @@ export default function ChatBubble({
             md:h-auto md:w-auto
             ${
               isExpanded
-                ? "md:max-w-4xl md:h-[75dvh] md:mx-auto md:rounded-xl md:relative md:top-1/2 md:-translate-y-1/2"
-                : "md:w-[480px] md:h-[50dvh] md:max-h-[calc(100vh-1rem)] md:rounded-xl"
+                ? "md:max-w-4xl md:mx-auto md:rounded-xl md:relative md:top-1/2 md:-translate-y-1/2"
+                : "md:w-[480px] md:rounded-xl"
             }
           `}
+            style={viewportHeight > 0 ? {
+              height: window.innerWidth >= 768 ? (
+                isExpanded 
+                  ? `${Math.min(viewportHeight * 0.75, viewportHeight - 32)}px`
+                  : `${Math.min(viewportHeight * 0.6, viewportHeight - 32)}px`
+              ) : '100dvh',
+              maxHeight: window.innerWidth >= 768 ? `${viewportHeight - 32}px` : '100dvh'
+            } : {}}
           >
             {/* Header */}
             <div className="flex justify-between items-center px-4 py-3 border-b bg-white/95 backdrop-blur-sm md:bg-white md:backdrop-blur-none md:rounded-t-xl">
