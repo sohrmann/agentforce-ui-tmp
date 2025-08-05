@@ -39,7 +39,6 @@ export const sendStreamingMessage = async ({
       if (!value) continue;
       const lines = decoder.decode(value).split(/\n/);
       const jsonData = JSON.parse(lines[2].replace(/^data:\s*/, ""));
-      console.log(jsonData);
       const { type, message } = jsonData.message;
       if (type === "ProgressIndicator") {
         onSSEProgressIndicator(message);

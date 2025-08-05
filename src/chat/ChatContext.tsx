@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useRef, useCallback, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, useRef, ReactNode, useEffect } from "react";
 import type { Message } from "./types";
 import { sendStreamingMessage } from "./sse";
 
@@ -49,18 +49,15 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
   }, [hasUserSentMessage]);
 
   const openChat = () => {
-    console.log("Opening chat from ChatContext");
     setIsOpen(true);
     setHasNotification(false);
   };
 
   const closeChat = () => {
-    console.log("Closing chat from ChatContext");
     setIsOpen(false);
   };
 
   const addMessage = (type: "ai" | "user", message: string, timestamp: string, subtype?: "productBackfilled" | "chat") => {
-    console.log("Adding message to chat", { type, message, timestamp, subtype, currentMessages: messages });
     // If this is a user message, mark that the user has sent a message
     if (type === "user") {
       setHasUserSentMessage(true);
@@ -72,7 +69,6 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
     }
     
     setMessages(prev => {
-      console.log("Previous messages:", prev);
       const newMessages = [
         ...prev,
         {
@@ -82,7 +78,6 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
           subtype,
         },
       ];
-      console.log("New messages:", newMessages);
       return newMessages;
     });
   };
@@ -123,7 +118,7 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
       userMessage: message,
       sequenceId: currentSequenceId,
       onSSEProgressIndicator: (message) => {
-        console.log("Progress indicator:", message);
+        console.debug("Progress indicator:", message);
       },
       onSSETextChunk: (message, offset) => {
         // Update the AI response text with the new chunk
@@ -161,11 +156,9 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
         });
       },
       onSSEInform: (message) => {
-        console.log("Inform:", message);
+        console.debug("Inform:", message);
       },
       onSSEEndOfTurn: () => {
-        console.log("End of turn");
-        
         // Update the AI message to remove the typing indicator
         setMessages(prev => {
           const lastMessage = prev[prev.length - 1];
@@ -185,42 +178,6 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
     });
   };
 
-  const handleProductBackfilled = useCallback((message: any) => {
-    console.log("Handling product backfilled message:", message);
-    const currentMessages = messagesRef.current;
-    const hasUserMessages = currentMessages.some(msg => msg.type === "user");
-    console.log("Current messages:", currentMessages, "Has user messages:", hasUserMessages);
-    
-    if (!hasUserMessages) {
-      // Replace welcome message but keep any other messages
-      console.log("No user messages yet, replacing welcome message");
-      setMessages(prev => [
-        {
-          type: "ai" as const,
-          message: message.data.content,
-          timestamp: message.data.timestamp,
-          subtype: "productBackfilled" as const,
-        },
-        ...prev.slice(1) // Keep all messages after the welcome message
-      ]);
-    } else {
-      // Keep all existing messages and add new one
-      console.log("User has sent messages, appending to conversation");
-      setMessages(prev => [...prev, {
-        type: "ai" as const,
-        message: message.data.content,
-        timestamp: message.data.timestamp,
-        subtype: "productBackfilled" as const,
-      }]);
-    }
-
-    // Handle notification and chat opening
-    if (!isOpen) {
-      setHasNotification(true);
-      openChat();
-    }
-  }, [isOpen, openChat]);
-
   // Initialize messages with welcome message
   useEffect(() => {
     if (messages.length === 0) {
@@ -231,31 +188,6 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
       }]);
     }
   }, [welcomeMessage]);
-
-  // Set up socket listeners (placeholder for future socket integration)
-  useEffect(() => {
-    console.log("Setting up socket event listeners in ChatContext");
-    
-    // TODO: Implement socket listeners when socket functionality is added
-    // const messageHandler = (message: ChatMessageContent) => {
-    //   console.log("Received message via socket:", message);
-    //   addMessage("ai", message.data.content, message.data.timestamp, "chat");
-    //   if (!isOpen) {
-    //     openChat();
-    //   }
-    // };
-
-    // const productBackfilledHandler = (message: ProductBackfilled) => {
-    //   handleProductBackfilled(message);
-    // };
-
-    // socketClient.onMessage(messageHandler);
-    // socketClient.onProductBackfilled(productBackfilledHandler);
-    
-    return () => {
-      console.log("Cleaning up socket event listeners in ChatContext");
-    };
-  }, [isOpen, handleProductBackfilled, addMessage]);
 
   useEffect(() => {
     // Check for user messages whenever messages change
