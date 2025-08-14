@@ -6,22 +6,27 @@ import ChatMessage from "./ChatMessage";
 import type { Message } from "./types";
 import { sendStreamingMessage } from "./sse";
 import { useChat } from "./ChatContext";
+import { ChunkValidator, type TextChunk, type ChunkValidationResult } from "./chunkValidator";
 
 type Props = {
   welcomeMessage?: string;
   agentId?: string;
 };
 
-type TextChunk = {
-  chunk: string;
-  offset: number;
-};
-
 export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [inputChunks, setInputChunks] = useState<TextChunk[]>([]);
+  const chunkValidatorRef = useRef<ChunkValidator>(new ChunkValidator());
+  const [validationResult, setValidationResult] = useState<ChunkValidationResult>({
+    isComplete: false,
+    hasGaps: false,
+    missingOffsets: [],
+    duplicateOffsets: [],
+    assembledText: '',
+  });
   const [aiStatus, setAiStatus] = useState<string>("");
   const [isAiTyping, setAiTyping] = useState<boolean>(false);
+  const [chunkWarnings, setChunkWarnings] = useState<string[]>([]);
+  const [sseErrors, setSseErrors] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const userMessage = searchParams.get("message");
   const { messages, addMessage } = useChat();
@@ -47,21 +52,23 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
     }
   };
 
+  // Get the validated assembled text from the chunk validator
   const aiInput: string = useMemo(() => {
-    if (inputChunks && inputChunks.length > 0) {
-      return inputChunks
-        .sort((a: TextChunk, b: TextChunk) => {
-          if (a.offset > b.offset) return 1;
-          return -1;
-        })
-        .map(({ chunk }) => chunk)
-        .join("");
-    }
-    return "";
-  }, [inputChunks]);
+    return validationResult.assembledText;
+  }, [validationResult]);
 
   useEffect(() => {
-    setInputChunks([]);
+    // Reset chunk validator when starting new message
+    chunkValidatorRef.current.reset();
+    setValidationResult({
+      isComplete: false,
+      hasGaps: false,
+      missingOffsets: [],
+      duplicateOffsets: [],
+      assembledText: '',
+    });
+    setChunkWarnings([]);
+    
     if (userMessage) {
       addMessage("user", userMessage, new Date().toISOString());
       handlePostMessage(userMessage, messages.length);
@@ -73,17 +80,40 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   }, [aiInput]);
 
   useEffect(() => {
-    setInputChunks([]);
+    // Reset validator when AI stops typing (new message starting)
+    if (!isAiTyping) {
+      chunkValidatorRef.current.reset();
+      setValidationResult({
+        isComplete: false,
+        hasGaps: false,
+        missingOffsets: [],
+        duplicateOffsets: [],
+        assembledText: '',
+      });
+      setChunkWarnings([]);
+    }
   }, [isAiTyping]);
 
   const addChunk = (chunk: string, offset: number) => {
-    setInputChunks((prev) => [
-      ...prev,
-      {
-        chunk,
-        offset,
-      },
-    ]);
+    const result = chunkValidatorRef.current.addChunk(chunk, offset);
+    setValidationResult(result);
+    
+    // Log warnings for debugging
+    if (result.hasGaps && result.missingOffsets.length > 0) {
+      const warning = `Chunk gaps detected at offsets: ${result.missingOffsets.join(', ')}`;
+      console.warn(warning);
+      setChunkWarnings(prev => [...prev.filter(w => !w.includes('gaps detected')), warning]);
+    }
+    
+    if (result.duplicateOffsets.length > 0) {
+      const warning = `Duplicate chunks at offsets: ${result.duplicateOffsets.join(', ')}`;
+      console.warn(warning);
+      setChunkWarnings(prev => [...prev.filter(w => !w.includes('Duplicate chunks')), warning]);
+    }
+
+    // Log diagnostics for debugging
+    const diagnostics = chunkValidatorRef.current.getDiagnostics();
+    console.debug('Chunk diagnostics:', diagnostics);
   };
 
   const onSSEProgressIndicator = (message: string) => {
@@ -101,10 +131,36 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   
   const onSSEEndOfTurn = () => {
     setAiTyping(false);
+    
+    // Final validation check
+    const finalResult = chunkValidatorRef.current.getCurrentState();
+    if (finalResult.hasGaps) {
+      console.warn('Message completed with gaps:', finalResult.missingOffsets);
+    }
+    if (!finalResult.isComplete) {
+      console.warn('Message may be incomplete');
+    }
+    
+    // Log final diagnostics
+    console.debug('Final message diagnostics:', chunkValidatorRef.current.getDiagnostics());
+  };
+
+  const onSSEError = (error: string) => {
+    console.error('SSE Error:', error);
+    setSseErrors(prev => [...prev, error]);
+    setAiTyping(false);
+    
+    // Add error message to chat in development
+    if (process.env.NODE_ENV === 'development') {
+      addMessage("ai", `⚠️ Streaming error: ${error}`, new Date().toISOString());
+    }
   };
 
   const handlePostMessage = async (userMessage: string, sequenceId: number) => {
     setAiTyping(true);
+    // Clear previous errors
+    setSseErrors([]);
+    
     await sendStreamingMessage({
       userMessage,
       sequenceId,
@@ -113,6 +169,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
       onSSETextChunk,
       onSSEInform,
       onSSEEndOfTurn,
+      onSSEError,
     });
   };
 
@@ -152,6 +209,29 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-4 p-4 pb-2">
+            {/* Show chunk validation warnings in development */}
+            {process.env.NODE_ENV === 'development' && (chunkWarnings.length > 0 || sseErrors.length > 0) && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                {chunkWarnings.length > 0 && (
+                  <>
+                    <div className="text-sm font-medium text-yellow-800 mb-1">Chunk Validation Warnings:</div>
+                    {chunkWarnings.map((warning, idx) => (
+                      <div key={idx} className="text-xs text-yellow-700">{warning}</div>
+                    ))}
+                  </>
+                )}
+                
+                {sseErrors.length > 0 && (
+                  <>
+                    <div className="text-sm font-medium text-red-800 mb-1 mt-2">SSE Errors:</div>
+                    {sseErrors.map((error, idx) => (
+                      <div key={idx} className="text-xs text-red-700">{error}</div>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+            
             {toShowMessages.map(function (
               { type, message, isTyping, aiStatus, timestamp, subtype },
               idx
