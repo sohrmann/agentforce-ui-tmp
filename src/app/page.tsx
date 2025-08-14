@@ -84,24 +84,24 @@ export default function HomePage() {
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-4 md:gap-3">
                       <Feature
                         icon="🎯"
-                        title="Personalized Experience"
-                        description="Tailored assistance for your needs"
+                        title="Your UI, Your Rules"
+                        description="Tailor your agent interface to your development needs"
                         gradientFrom="from-purple-400"
                         gradientTo="to-purple-600"
                       />
 
                       <Feature
                         icon="💬"
-                        title="Intelligent Conversations"
-                        description="Natural, context-aware AI interactions"
+                        title="Production Ready"
+                        description="Vibe coding meets best practices on Heroku"
                         gradientFrom="from-emerald-400"
                         gradientTo="to-emerald-600"
                       />
 
                       <Feature
                         icon="⚡"
-                        title="Lightning Fast"
-                        description="Instant responses with cutting-edge AI"
+                        title="Flexible & Secure"
+                        description="Heroku's flexibility with a Salesforce foundation"
                         gradientFrom="from-blue-400"
                         gradientTo="to-blue-600"
                       />
