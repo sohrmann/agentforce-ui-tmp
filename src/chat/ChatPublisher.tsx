@@ -56,7 +56,7 @@ export default function ChatPublisher({ onPostMessage }: Props) {
         type="submit"
         disabled={!canSend}
         className={`
-          flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200
+          flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 rotate-45
           ${canSend 
             ? 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95' 
             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
