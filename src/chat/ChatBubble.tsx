@@ -4,6 +4,7 @@ import ChatContainer from "./ChatContainer";
 import { useChat } from "./ChatContext";
 import AgentforceLogo from "@/components/AgentforceLogo";
 import HerokuIcon from "@/components/HerokuIcon";
+import { clientEnv } from "@/config/client-env";
 
 interface ChatBubbleProps {
   welcomeMessage: string;
@@ -42,7 +43,7 @@ export default function ChatBubble({
     closeChat();
   };
 
-  const displayName = agentName || "Agentforce";
+  const displayName = agentName || clientEnv.NEXT_PUBLIC_AGENT_NAME;
 
   return (
     <>
