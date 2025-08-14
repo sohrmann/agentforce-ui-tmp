@@ -15,7 +15,7 @@ export default {
         herokuMain: '#5a1ba9',
         salesforceMain: '#0176d3',
       },
-      typography: {
+      typography: (theme: any) => ({
         DEFAULT: {
           css: {
             h1: {
@@ -48,9 +48,10 @@ export default {
             'p + p': {
               marginTop: '0.5em',
             },
+            '--tw-prose-invert-body': '#ffffff',
           },
         },
-      },
+      }),
     },
   },
   plugins: [
