@@ -6,8 +6,10 @@ import { sendStreamingMessage } from "./sse";
 type ChatContextType = {
   isOpen: boolean;
   hasNotification: boolean;
-  openChat: () => void;
+  isExpanded: boolean;
+  openChat: (expanded?: boolean) => void;
   closeChat: () => void;
+  setExpanded: (expanded: boolean) => void;
   messages: Message[];
   addMessage: (type: "ai" | "user", message: string, timestamp: string, subtype?: "productBackfilled" | "chat") => void;
   sendMessage: (message: string) => void;
@@ -34,6 +36,7 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasUserSentMessage, setHasUserSentMessage] = useState<boolean>(false);
   const [sequenceId, setSequenceId] = useState<number>(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Use refs to maintain latest state in event listeners
   const messagesRef = useRef<Message[]>([]);
@@ -48,13 +51,20 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
     hasUserSentMessageRef.current = hasUserSentMessage;
   }, [hasUserSentMessage]);
 
-  const openChat = () => {
+  const openChat = (expanded?: boolean) => {
     setIsOpen(true);
     setHasNotification(false);
+    if (expanded !== undefined) {
+      setIsExpanded(expanded);
+    }
   };
 
   const closeChat = () => {
     setIsOpen(false);
+  };
+
+  const setExpanded = (expanded: boolean) => {
+    setIsExpanded(expanded);
   };
 
   const addMessage = (type: "ai" | "user", message: string, timestamp: string, subtype?: "productBackfilled" | "chat") => {
@@ -201,8 +211,10 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
     <ChatContext.Provider value={{ 
       isOpen, 
       hasNotification, 
+      isExpanded,
       openChat, 
       closeChat, 
+      setExpanded,
       messages, 
       addMessage,
       sendMessage

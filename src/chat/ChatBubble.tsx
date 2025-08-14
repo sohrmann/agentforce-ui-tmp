@@ -16,9 +16,8 @@ export default function ChatBubble({
   agentId,
   agentName,
 }: ChatBubbleProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(0);
-  const { isOpen, hasNotification, openChat, closeChat } = useChat();
+  const { isOpen, hasNotification, isExpanded, openChat, closeChat, setExpanded } = useChat();
 
   useEffect(() => {
     const updateHeight = () => {
@@ -37,7 +36,7 @@ export default function ChatBubble({
 
   // Reset expanded state when chat is closed
   const handleClose = () => {
-    setIsExpanded(false);
+    setExpanded(false);
     // Might be a bug in AF around this. Use with caution.
     // endSession();
     closeChat();
@@ -52,7 +51,7 @@ export default function ChatBubble({
         <div className="fixed bottom-4 right-4 z-[100]">
           <div className="relative">
             <button
-              onClick={openChat}
+              onClick={() => openChat()}
               className="bg-white rounded-full shadow-lg hover:shadow-xl w-14 h-14 flex items-center justify-center overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95"
             >
               <AgentforceLogo size="medium" alt={`Chat with ${displayName}`} />
@@ -78,7 +77,7 @@ export default function ChatBubble({
           {isExpanded && (
             <div 
               className="hidden md:block absolute inset-0 bg-black/20 backdrop-blur-sm cursor-pointer" 
-              onClick={() => setIsExpanded(false)}
+              onClick={() => setExpanded(false)}
             />
           )}
 
@@ -115,7 +114,7 @@ export default function ChatBubble({
               <div className="flex items-center gap-1">
                 {/* Expand button - desktop only */}
                 <button
-                  onClick={() => setIsExpanded(!isExpanded)}
+                  onClick={() => setExpanded(!isExpanded)}
                   className="hidden md:flex text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition-colors"
                   title={isExpanded ? "Minimize" : "Expand"}
                 >

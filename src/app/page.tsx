@@ -58,7 +58,7 @@ export default function HomePage() {
                     </h1>
                   </div>
                   <button
-                    onClick={openChat}
+                    onClick={() => openChat(true)}
                     className="group w-2/3 mx-auto bg-herokuMain/70 hover:bg-herokuMain/80 text-white font-semibold py-3 md:py-2 px-6 md:px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                   >
                     <span className="flex items-center justify-center gap-2">
