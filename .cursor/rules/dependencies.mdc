@@ -1,9 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-
-# Dependency Management
-
-Use `pnpm` for all dependency and package management.

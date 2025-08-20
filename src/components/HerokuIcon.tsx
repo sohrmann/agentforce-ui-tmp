@@ -15,7 +15,7 @@ export default function HerokuIcon({
 }: HerokuIconProps) {
   return (
     <Image
-      src="/images/heroku-icon.svg"
+      src="/images/heroku.svg"
       alt={alt}
       width={width}
       height={height}

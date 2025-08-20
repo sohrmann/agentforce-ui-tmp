@@ -25,8 +25,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   });
   const [aiStatus, setAiStatus] = useState<string>("");
   const [isAiTyping, setAiTyping] = useState<boolean>(false);
-  const [chunkWarnings, setChunkWarnings] = useState<string[]>([]);
-  const [sseErrors, setSseErrors] = useState<string[]>([]);
+
   const searchParams = useSearchParams();
   const userMessage = searchParams.get("message");
   const { messages, addMessage } = useChat();
@@ -67,7 +66,6 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
       duplicateOffsets: [],
       assembledText: '',
     });
-    setChunkWarnings([]);
     
     if (userMessage) {
       addMessage("user", userMessage, new Date().toISOString());
@@ -90,7 +88,6 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
         duplicateOffsets: [],
         assembledText: '',
       });
-      setChunkWarnings([]);
     }
   }, [isAiTyping]);
 
@@ -100,15 +97,11 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
     
     // Log warnings for debugging
     if (result.hasGaps && result.missingOffsets.length > 0) {
-      const warning = `Chunk gaps detected at offsets: ${result.missingOffsets.join(', ')}`;
-      console.warn(warning);
-      setChunkWarnings(prev => [...prev.filter(w => !w.includes('gaps detected')), warning]);
+      console.warn(`Chunk gaps detected at offsets: ${result.missingOffsets.join(', ')}`);
     }
     
     if (result.duplicateOffsets.length > 0) {
-      const warning = `Duplicate chunks at offsets: ${result.duplicateOffsets.join(', ')}`;
-      console.warn(warning);
-      setChunkWarnings(prev => [...prev.filter(w => !w.includes('Duplicate chunks')), warning]);
+      console.warn(`Duplicate chunks at offsets: ${result.duplicateOffsets.join(', ')}`);
     }
 
     // Log diagnostics for debugging
@@ -147,19 +140,26 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
 
   const onSSEError = (error: string) => {
     console.error('SSE Error:', error);
-    setSseErrors(prev => [...prev, error]);
     setAiTyping(false);
     
-    // Add error message to chat in development
-    if (process.env.NODE_ENV === 'development') {
-      addMessage("ai", `⚠️ Streaming error: ${error}`, new Date().toISOString());
+    // Always add user-friendly error message to chat
+    const userFriendlyMessage = getUserFriendlyErrorMessage(error);
+    addMessage("ai", `😳 ${userFriendlyMessage}`, new Date().toISOString());
+  };
+
+  // Helper function to convert technical errors to user-friendly messages
+  const getUserFriendlyErrorMessage = (error: string): string => {
+    // Check for common error patterns and return user-friendly messages
+    if (error.includes('timeout') || error.includes('ECONNABORTED')) {
+      return "The Agentforce API is taking longer than usual to respond. Please try again soon!";
     }
+    
+    // Default fallback message
+    return "The Agentforce API is currently experiencing some issues. Please try again soon!";
   };
 
   const handlePostMessage = async (userMessage: string, sequenceId: number) => {
     setAiTyping(true);
-    // Clear previous errors
-    setSseErrors([]);
     
     await sendStreamingMessage({
       userMessage,
@@ -209,28 +209,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-4 p-4 pb-2">
-            {/* Show chunk validation warnings in development */}
-            {process.env.NODE_ENV === 'development' && (chunkWarnings.length > 0 || sseErrors.length > 0) && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                {chunkWarnings.length > 0 && (
-                  <>
-                    <div className="text-sm font-medium text-yellow-800 mb-1">Chunk Validation Warnings:</div>
-                    {chunkWarnings.map((warning, idx) => (
-                      <div key={idx} className="text-xs text-yellow-700">{warning}</div>
-                    ))}
-                  </>
-                )}
-                
-                {sseErrors.length > 0 && (
-                  <>
-                    <div className="text-sm font-medium text-red-800 mb-1 mt-2">SSE Errors:</div>
-                    {sseErrors.map((error, idx) => (
-                      <div key={idx} className="text-xs text-red-700">{error}</div>
-                    ))}
-                  </>
-                )}
-              </div>
-            )}
+
             
             {toShowMessages.map(function (
               { type, message, isTyping, aiStatus, timestamp, subtype },

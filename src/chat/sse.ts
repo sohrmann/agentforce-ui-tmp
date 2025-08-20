@@ -103,6 +103,14 @@ export const sendStreamingMessage = async ({
               continue;
             }
             
+            // Handle API error responses
+            if (jsonData.error && jsonData.type === 'error') {
+              const errorMessage = jsonData.message || 'Unknown error occurred';
+              console.error('API Error:', errorMessage);
+              onSSEError?.(errorMessage);
+              continue;
+            }
+            
             // Validate message structure
             if (!jsonData.message || typeof jsonData.message !== 'object') {
               console.warn('Invalid message structure in SSE data:', jsonData);
