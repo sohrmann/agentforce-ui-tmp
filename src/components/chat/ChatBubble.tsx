@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ChatContainer from "./ChatContainer";
 import ChatHeader from "./ChatHeader";
-import { useChat } from "./ChatContext";
+import { useChat } from "@/hooks/useChat";
 import AgentforceLogo from "@/components/AgentforceLogo";
 import { clientEnv } from "@/config/client-env";
 

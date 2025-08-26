@@ -1,5 +1,5 @@
 'use client';
-import { ChatProvider } from "@/chat/ChatContext";
+import { ChatProvider } from "@/hooks/ChatProvider";
 import { clientEnv } from "@/config/client-env";
 
 interface ClientProvidersProps {

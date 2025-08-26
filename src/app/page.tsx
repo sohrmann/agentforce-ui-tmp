@@ -1,12 +1,12 @@
 "use client";
 import SimpleHeader from "@/components/SimpleHeader";
 import { clientEnv } from "@/config/client-env";
-import ChatBubble from "@/chat/ChatBubble";
+import ChatBubble from "@/components/chat/ChatBubble";
 import AgentforceLogo from "@/components/AgentforceLogo";
 import HerokuIcon from "@/components/HerokuIcon";
 import BackgroundPattern from "@/components/BackgroundPattern";
 import Feature from "@/components/Feature";
-import { useChat } from "@/chat/ChatContext";
+import { useChat } from "@/hooks/useChat";
 
 export default function HomePage() {
   const { openChat } = useChat();

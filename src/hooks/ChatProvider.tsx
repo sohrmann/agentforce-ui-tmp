@@ -1,29 +1,8 @@
 "use client";
-import { createContext, useContext, useState, useRef, ReactNode, useEffect } from "react";
-import type { Message } from "./types";
-import { sendStreamingMessage } from "./sse";
-
-type ChatContextType = {
-  isOpen: boolean;
-  hasNotification: boolean;
-  isExpanded: boolean;
-  openChat: (expanded?: boolean) => void;
-  closeChat: () => void;
-  setExpanded: (expanded: boolean) => void;
-  messages: Message[];
-  addMessage: (type: "ai" | "user", message: string, timestamp: string, subtype?: "productBackfilled" | "chat") => void;
-  sendMessage: (message: string) => void;
-};
-
-const ChatContext = createContext<ChatContextType | null>(null);
-
-export const useChat = () => {
-  const context = useContext(ChatContext);
-  if (!context) {
-    throw new Error("useChat must be used within a ChatProvider");
-  }
-  return context;
-};
+import { useState, useRef, ReactNode, useEffect } from "react";
+import type { Message } from "@/chat/types";
+import { sendStreamingMessage } from "@/chat/sse";
+import { ChatContext } from "./ChatContext";
 
 type ChatProviderProps = {
   children: ReactNode;
@@ -222,4 +201,4 @@ export const ChatProvider = ({ children, welcomeMessage }: ChatProviderProps) =>
       {children}
     </ChatContext.Provider>
   );
-}; 
+};

@@ -3,10 +3,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import ChatPublisher from "./ChatPublisher";
 import ChatMessage from "./ChatMessage";
-import type { Message } from "./types";
-import { sendStreamingMessage } from "./sse";
-import { useChat } from "./ChatContext";
-import { ChunkValidator, type TextChunk, type ChunkValidationResult } from "./chunkValidator";
+import type { Message } from "@/chat/types";
+import { sendStreamingMessage } from "@/chat/sse";
+import { useChat } from "@/hooks/useChat";
+import { ChunkValidator, type TextChunk, type ChunkValidationResult } from "@/chat/chunkValidator";
 
 type Props = {
   welcomeMessage?: string;
@@ -25,6 +25,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   });
   const [aiStatus, setAiStatus] = useState<string>("");
   const [isAiTyping, setAiTyping] = useState<boolean>(false);
+  const [hasAddedFinalMessage, setHasAddedFinalMessage] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
   const userMessage = searchParams.get("message");
@@ -66,6 +67,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
       duplicateOffsets: [],
       assembledText: '',
     });
+    setHasAddedFinalMessage(false);
     
     if (userMessage) {
       addMessage("user", userMessage, new Date().toISOString());
@@ -88,6 +90,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
         duplicateOffsets: [],
         assembledText: '',
       });
+      setHasAddedFinalMessage(false);
     }
   }, [isAiTyping]);
 
@@ -118,20 +121,37 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
   };
   
   const onSSEInform = (message: string) => {
+    console.log('onSSEInform called with message:', message);
+    console.log('hasAddedFinalMessage:', hasAddedFinalMessage);
     setAiTyping(false);
-    addMessage("ai", message, new Date().toISOString());
+    
+    // Only add the inform message if we haven't already added the final assembled message
+    if (!hasAddedFinalMessage) {
+      addMessage("ai", message, new Date().toISOString());
+    } else {
+      console.log('Skipping onSSEInform message because final message already added');
+    }
   };
   
   const onSSEEndOfTurn = () => {
+    console.log('onSSEEndOfTurn called');
     setAiTyping(false);
     
     // Final validation check
     const finalResult = chunkValidatorRef.current.getCurrentState();
+    console.log('Final assembled text:', finalResult.assembledText);
     if (finalResult.hasGaps) {
       console.warn('Message completed with gaps:', finalResult.missingOffsets);
     }
     if (!finalResult.isComplete) {
       console.warn('Message may be incomplete');
+    }
+    
+    // Add the final assembled message to the persistent messages array
+    if (finalResult.assembledText && finalResult.assembledText.trim()) {
+      console.log('Adding final assembled message to persistent array');
+      addMessage("ai", finalResult.assembledText, new Date().toISOString());
+      setHasAddedFinalMessage(true);
     }
     
     // Log final diagnostics
@@ -160,6 +180,7 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
 
   const handlePostMessage = async (userMessage: string, sequenceId: number) => {
     setAiTyping(true);
+    setHasAddedFinalMessage(false); // Reset flag when starting new message
     
     await sendStreamingMessage({
       userMessage,
@@ -209,8 +230,6 @@ export default function ChatContainer({ welcomeMessage, agentId }: Props) {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-4 p-4 pb-2">
-
-            
             {toShowMessages.map(function (
               { type, message, isTyping, aiStatus, timestamp, subtype },
               idx

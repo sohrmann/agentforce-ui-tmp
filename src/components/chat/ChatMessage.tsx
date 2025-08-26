@@ -1,5 +1,6 @@
-import type { Message } from "./types";
+import type { Message } from "@/chat/types";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import AgentforceLogo from "@/components/AgentforceLogo";
 import HerokuIcon from "@/components/HerokuIcon";
 
@@ -40,7 +41,7 @@ export default function ChatMessage({
           <div className="flex-1 max-w-[85%] sm:max-w-[75%]">
             <div className="bg-white rounded-2xl rounded-tl-md shadow-sm border border-gray-100 px-4 py-3">
               <div className="text-sm text-gray-800 prose prose-sm max-w-none">
-                <ReactMarkdown>{message}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{message}</ReactMarkdown>
                 {isTyping && <span className="animate-pulse text-blue-500">●</span>}
               </div>
               
@@ -71,7 +72,7 @@ export default function ChatMessage({
         <div className="flex-1 max-w-[85%] sm:max-w-[75%] flex justify-end">
           <div className="bg-blue-500 text-white rounded-2xl rounded-tr-md shadow-sm px-4 py-3">
             <div className="text-sm prose prose-sm prose-invert max-w-none">
-              <ReactMarkdown>{message}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message}</ReactMarkdown>
             </div>
           </div>
         </div>
