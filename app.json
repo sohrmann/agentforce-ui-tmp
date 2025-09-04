@@ -4,7 +4,7 @@
   "repository": "https://github.com/aagnone-sfhk/agentforce-ui",
   "logo": "https://ui.agentforcedemos.com/images/agentforce.svg",
   "scripts": {
-    "postdeploy": "chmod +x etc/notify_deployment.sh && etc/notify_deployment.sh agentforce-ui"
+    "postdeploy": "chmod +x etc/notify_deployment.sh && etc/notify_deployment.sh agentforce-ui ${DEPLOY_CONTEXT}"
   },
   "env": {
     "SF_MY_DOMAIN_URL": {

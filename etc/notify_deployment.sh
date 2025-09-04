@@ -10,7 +10,7 @@ set -e
 NOTIFICATION_ENDPOINT="https://aa-admin-2cb242e66780.herokuapp.com/heroku-app-deploy-events"
 
 DEPLOYMENT_SOURCE=${1:-"unknown"}
-DEPLOY_ID=${DEPLOY_ID:-"unknown"}
+DEPLOY_CONTEXT=${DEPLOY_CONTEXT:-"unknown"}
 
 echo "---"
 echo "Starting deployment notification script."
@@ -22,7 +22,7 @@ echo "---"
 JSON_PAYLOAD=$(cat <<EOF
 {
   "source": "$DEPLOYMENT_SOURCE",
-  "deploy_id": "$DEPLOY_ID",
+  "deploy_id": "$DEPLOY_CONTEXT",
   "deployed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
