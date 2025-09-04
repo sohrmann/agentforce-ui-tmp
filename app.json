@@ -2,7 +2,7 @@
   "name": "Agentforce UI Demo",
   "description": "Next.js demo app showcasing a custom UI for a Salesforce Agentforce Agent using the Agent API and Heroku",
   "repository": "https://github.com/aagnone-sfhk/agentforce-ui",
-  "logo": "https://node-js-sample-1234567890ab.herokuapp.com/node.png",
+  "logo": "https://ui.agentforcedemos.com/images/agentforce.svg",
   "env": {
     "SF_MY_DOMAIN_URL": {
       "description": "My Domain URL for your Salesforce org",
@@ -22,15 +22,15 @@
     },
     "NEXT_PUBLIC_APP_TITLE": {
       "description": "Title of the application",
-      "value": "AI Chat Assistant"
+      "value": "Agentforce Anywhere"
     },
     "NEXT_PUBLIC_APP_DESCRIPTION": {
       "description": "Description of the application",
-      "value": "Your intelligent AI assistant powered by Agentforce"
+      "value": "Your Agentforce agents at your fingertips"
     },
     "NEXT_PUBLIC_APP_INTRO_MESSAGE": {
       "description": "Welcome message shown to users",
-      "value": "Hello! I'm your AI assistant. How can I help you today?"
+      "value": "How can I help?"
     }
   }
 }
