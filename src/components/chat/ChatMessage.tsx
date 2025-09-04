@@ -9,9 +9,7 @@ export default function ChatMessage({
   message,
   aiStatus,
   isTyping,
-  subtype,
-  handleResponse,
-}: Message & { handleResponse: (response: boolean) => void }) {
+}: Message) {
   
   if (type === "ai") {
     return (
@@ -44,23 +42,6 @@ export default function ChatMessage({
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{message}</ReactMarkdown>
                 {isTyping && <span className="animate-pulse text-blue-500">●</span>}
               </div>
-              
-              {subtype === "productBackfilled" && handleResponse && (
-                <div className="flex gap-2 mt-3 pt-2 border-t border-gray-100">
-                  <button
-                    onClick={() => handleResponse(true)}
-                    className="flex-1 px-3 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 active:bg-green-700 transition-colors font-medium"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={() => handleResponse(false)}
-                    className="flex-1 px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors font-medium"
-                  >
-                    No
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         )}

@@ -120,7 +120,7 @@ export const sendStreamingMessage = async ({
             
             const { type, message } = jsonData.message;
             
-            if (!type || typeof message !== 'string') {
+            if (!type) {
               console.warn('Missing or invalid type/message in SSE data:', jsonData.message);
               continue;
             }
