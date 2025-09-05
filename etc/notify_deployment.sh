@@ -4,13 +4,14 @@
 # Make sure this file is executable by running: chmod +x bin/notify_deployment.sh
 
 # Exit immediately if a command fails, to ensure the deployment is marked as failed if the script errors out.
-set -e
+set -ex
 
 # The endpoint to send the notification to.
 NOTIFICATION_ENDPOINT="https://aa-admin-2cb242e66780.herokuapp.com/heroku-app-deploy-events"
 
+echo "DEPLOY_CONTEXT: $DEPLOY_CONTEXT"
 DEPLOYMENT_SOURCE=${1:-"unknown"}
-DEPLOY_CONTEXT=${DEPLOY_CONTEXT:-"unknown"}
+DEPLOY_CONTEXT=${2:-"unknown"}
 
 echo "---"
 echo "Starting deployment notification script."
