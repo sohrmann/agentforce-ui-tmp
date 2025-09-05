@@ -23,7 +23,7 @@ echo "---"
 JSON_PAYLOAD=$(cat <<EOF
 {
   "source": "$DEPLOYMENT_SOURCE",
-  "deploy_id": "$DEPLOY_CONTEXT",
+  "deploy_context": "$DEPLOY_CONTEXT",
   "deployed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
