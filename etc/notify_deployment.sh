@@ -7,7 +7,7 @@
 set -ex
 
 # The endpoint to send the notification to.
-NOTIFICATION_ENDPOINT="https://aa-admin-2cb242e66780.herokuapp.com/heroku-app-deploy-events"
+NOTIFICATION_ENDPOINT="https://deploy.herokuapps.ai/heroku-app-deploy-events"
 
 echo "DEPLOY_CONTEXT: $DEPLOY_CONTEXT"
 DEPLOYMENT_SOURCE=${1:-"unknown"}
