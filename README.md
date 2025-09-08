@@ -34,7 +34,7 @@ Before getting started, you'll need to set up your Salesforce Agentforce Agent. 
 
 Deploy this application to Heroku with one click:
 
-<a href="https://www.heroku.com/deploy?template=https://github.com/aagnone-sfhk/agentforce-ui">
+<a href="https://deploy.herokuapps.ai/oauth/deploy?template_url=https://github.com/aagnone-sfhk/agentforce-ui">
 <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
 </a>
 
@@ -78,29 +78,6 @@ pnpm dev
 
 The application will be available at `http://localhost:3003`.
 
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/message/        # API route for agent communication
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx           # Home page
-├── chat/                   # Chat functionality
-│   ├── agentforce.ts      # Agentforce API integration
-│   ├── config.ts          # Chat configuration
-│   ├── sse.ts             # Server-Sent Events handling
-│   └── types.ts           # TypeScript types
-├── components/             # Reusable components
-│   ├── chat/              # Chat-specific components
-│   └── ...                # Other UI components
-├── hooks/                  # React hooks
-│   ├── ChatContext.tsx    # Chat state management
-│   └── useChat.ts         # Chat hook
-└── config/                 # Configuration files
-```
-
 ## Environment Variables
 
 ### Required Variables
@@ -126,16 +103,3 @@ src/
 - `pnpm build` - Build the application for production
 - `pnpm start` - Start the production server
 - `pnpm lint` - Run ESLint for code quality checks
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-
-## License
-
-MIT License
