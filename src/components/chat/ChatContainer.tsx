@@ -25,8 +25,10 @@ export default function ChatContainer({ agentId }: Props) {
     assembledText: '',
   });
   const [aiStatus, setAiStatus] = useState<string>("");
+  const [informMessages, setInformMessages] = useState<string[]>([]);
   const [isAiTyping, setAiTyping] = useState<boolean>(false);
   const [hasAddedFinalMessage, setHasAddedFinalMessage] = useState<boolean>(false);
+  const [processedUserMessage, setProcessedUserMessage] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
   const userMessage = searchParams.get("message");
@@ -38,22 +40,13 @@ export default function ChatContainer({ agentId }: Props) {
   }, [validationResult]);
 
   useEffect(() => {
-    // Reset chunk validator when starting new message
-    chunkValidatorRef.current.reset();
-    setValidationResult({
-      isComplete: false,
-      hasGaps: false,
-      missingOffsets: [],
-      duplicateOffsets: [],
-      assembledText: '',
-    });
-    setHasAddedFinalMessage(false);
-    
-    if (userMessage) {
+    // Only process if we have a new user message that hasn't been processed yet
+    if (userMessage && userMessage !== processedUserMessage) {
       addMessage("user", userMessage, new Date().toISOString());
       handlePostMessage(userMessage, messages.length);
+      setProcessedUserMessage(userMessage);
     }
-  }, [userMessage, messages.length, addMessage]);
+  }, [userMessage, processedUserMessage, addMessage]);
 
   useEffect(() => {
     setAiStatus("");
@@ -61,7 +54,8 @@ export default function ChatContainer({ agentId }: Props) {
 
   useEffect(() => {
     // Reset validator when AI stops typing (new message starting)
-    if (!isAiTyping) {
+    // But only if we've already added the final message to avoid losing data
+    if (!isAiTyping && hasAddedFinalMessage) {
       chunkValidatorRef.current.reset();
       setValidationResult({
         isComplete: false,
@@ -71,8 +65,9 @@ export default function ChatContainer({ agentId }: Props) {
         assembledText: '',
       });
       setHasAddedFinalMessage(false);
+      setInformMessages([]); // Clear inform messages when conversation moves on
     }
-  }, [isAiTyping]);
+  }, [isAiTyping, hasAddedFinalMessage]);
 
   const addChunk = (chunk: string, offset: number) => {
     const result = chunkValidatorRef.current.addChunk(chunk, offset);
@@ -103,11 +98,16 @@ export default function ChatContainer({ agentId }: Props) {
   const onSSEInform = (message: string) => {
     setAiTyping(false);
     
-    // Only add the inform message if enabled and we haven't already added the final assembled message.
-    if (clientEnv.NEXT_PUBLIC_SF_PROCESS_INFORM_MESSAGES && !hasAddedFinalMessage) {
+    // Always collect inform messages for display as status information
+    setInformMessages(prev => [...prev, message]);
+    
+    // Only add the inform message as a separate chat message if enabled and we haven't already added the final assembled message.
+    // Also ensure we prefer the assembled text over inform messages for consistency
+    if (clientEnv.NEXT_PUBLIC_SF_PROCESS_INFORM_MESSAGES && !hasAddedFinalMessage && !validationResult.assembledText.trim()) {
       addMessage("ai", message, new Date().toISOString());
+      setHasAddedFinalMessage(true);
     } else {
-      console.debug('Skipping onSSEInform message', message);
+      console.debug('Collected inform message for status display:', message);
     }
   };
   
@@ -121,9 +121,14 @@ export default function ChatContainer({ agentId }: Props) {
     }
     
     // Add the final assembled message to the persistent messages array
-    if (finalResult.assembledText && finalResult.assembledText.trim()) {
+    // Only add if we haven't already added a final message (prevents double messages)
+    if (!hasAddedFinalMessage && finalResult.assembledText && finalResult.assembledText.trim()) {
       addMessage("ai", finalResult.assembledText, new Date().toISOString());
       setHasAddedFinalMessage(true);
+    } else if (hasAddedFinalMessage) {
+      console.debug('Skipping EndOfTurn message addition - final message already added');
+    } else {
+      console.debug('No assembled text available for EndOfTurn');
     }
     
     // Log final diagnostics
@@ -153,6 +158,17 @@ export default function ChatContainer({ agentId }: Props) {
   const handlePostMessage = async (userMessage: string, sequenceId: number) => {
     setAiTyping(true);
     setHasAddedFinalMessage(false); // Reset flag when starting new message
+    setInformMessages([]); // Clear previous inform messages
+    
+    // Reset chunk validator for new message
+    chunkValidatorRef.current.reset();
+    setValidationResult({
+      isComplete: false,
+      hasGaps: false,
+      missingOffsets: [],
+      duplicateOffsets: [],
+      assembledText: '',
+    });
     
     await sendStreamingMessage({
       userMessage,
@@ -181,12 +197,17 @@ export default function ChatContainer({ agentId }: Props) {
 
   const toShowMessages: Message[] = useMemo(() => {
     if (isAiTyping) {
+      // Combine progress indicator and inform messages for status display
+      const combinedStatus = [aiStatus, ...informMessages.slice(-2)] // Show last 2 inform messages
+        .filter(Boolean)
+        .join(" • ");
+      
       return [
         ...messages,
         {
           type: "ai",
           message: aiInput,
-          aiStatus: aiStatus,
+          aiStatus: combinedStatus,
           isTyping: isAiTyping,
           timestamp: new Date().toISOString(),
         },
@@ -194,7 +215,7 @@ export default function ChatContainer({ agentId }: Props) {
     } else {
       return messages;
     }
-  }, [messages, isAiTyping, aiInput, aiStatus]);
+  }, [messages, isAiTyping, aiInput, aiStatus, informMessages]);
 
   return (
     <>

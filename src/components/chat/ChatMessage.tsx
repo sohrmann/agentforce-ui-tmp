@@ -30,8 +30,10 @@ export default function ChatMessage({
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
             </div>
             {aiStatus && aiStatus.length > 0 && (
-              <div className="text-xs text-gray-500 ml-2">
-                {aiStatus}
+              <div className="text-xs text-gray-500 ml-2 max-w-xs">
+                <div className="bg-gray-50 rounded-lg px-2 py-1 border">
+                  {aiStatus}
+                </div>
               </div>
             )}
           </div>
@@ -42,6 +44,13 @@ export default function ChatMessage({
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{message}</ReactMarkdown>
                 {isTyping && <span className="animate-pulse text-blue-500">●</span>}
               </div>
+              {isTyping && aiStatus && aiStatus.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <div className="text-xs text-gray-500 bg-gray-50 rounded px-2 py-1">
+                    {aiStatus}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

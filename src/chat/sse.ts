@@ -21,6 +21,7 @@ export const sendStreamingMessage = async ({
   onSSEEndOfTurn,
   onSSEError,
 }: Props) => {
+  let hasEnded = false; // Track if stream has ended to prevent duplicate processing
   try {
     const res = await fetch("/api/message", {
       method: "POST",
@@ -89,7 +90,10 @@ export const sendStreamingMessage = async ({
             
             // Handle special SSE messages
             if (dataLine === '[DONE]' || dataLine === 'DONE') {
-              onSSEEndOfTurn();
+              if (!hasEnded) {
+                hasEnded = true;
+                onSSEEndOfTurn();
+              }
               continue;
             }
             
@@ -142,11 +146,16 @@ export const sendStreamingMessage = async ({
                 break;
                 
               case "Inform":
-                onSSEInform(message);
+                if (!hasEnded) {
+                  onSSEInform(message);
+                }
                 break;
                 
               case "EndOfTurn":
-                onSSEEndOfTurn();
+                if (!hasEnded) {
+                  hasEnded = true;
+                  onSSEEndOfTurn();
+                }
                 break;
                 
               default:
