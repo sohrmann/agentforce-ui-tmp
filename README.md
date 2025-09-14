@@ -2,6 +2,14 @@
 
 A modern Next.js application showcasing a custom chat interface for Salesforce Agentforce Agents using the Agent API. This demo provides a clean, responsive UI foundation for interacting with AI agents powered by Salesforce's Agentforce platform.
 
+## Launch Your Own
+
+Deploy this application to Heroku with one click:
+
+<a href="https://deploy.herokuapps.ai?template=https://github.com/aagnone-sfhk/agentforce-ui">
+    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
+</a>
+
 ## Features
 
 - 🤖 **Real-time Chat Interface**: Interactive chat UI with streaming responses
@@ -29,14 +37,6 @@ Before getting started, you'll need to set up your Salesforce Agentforce Agent. 
 - **AGENT_ID**: The unique identifier (copilotId) of your Agentforce Agent.
 - **CONSUMER_KEY** / **CONSUMER_SECRET**: OAuth credentials from your Salesforce Connected App
 - **MY_DOMAIN_URL**: Your Salesforce org's My Domain URL
-
-## Quick Deploy to Heroku
-
-Deploy this application to Heroku with one click:
-
-<a href="https://deploy.herokuapps.ai?template=https://github.com/aagnone-sfhk/agentforce-ui">
-    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
-</a>
 
 ## Local Development
 
