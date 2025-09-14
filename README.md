@@ -1,6 +1,6 @@
 # Agentforce UI Demo
 
-A modern Next.js application showcasing a custom chat interface for Salesforce Agentforce Agents using the Agent API. This demo provides a clean, responsive UI for interacting with AI agents powered by Salesforce's Agentforce platform.
+A modern Next.js application showcasing a custom chat interface for Salesforce Agentforce Agents using the Agent API. This demo provides a clean, responsive UI foundation for interacting with AI agents powered by Salesforce's Agentforce platform.
 
 ## Features
 
@@ -13,11 +13,11 @@ A modern Next.js application showcasing a custom chat interface for Salesforce A
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
-- **Runtime**: Node.js 18+
+- **Framework**: Next.js w/ App Router
+- **Runtime**: Node.js
 - **Package Manager**: pnpm
 - **AI Agent**: Salesforce Agentforce (Agent API)
-- **Styling**: Tailwind CSS with Typography plugin
+- **Styling**: Tailwind CSS w/ Typography plugin
 - **HTTP Client**: Axios
 - **Validation**: Zod
 - **Markdown**: React Markdown for rich message formatting
@@ -26,7 +26,7 @@ A modern Next.js application showcasing a custom chat interface for Salesforce A
 
 Before getting started, you'll need to set up your Salesforce Agentforce Agent. Follow the [Get Started guide](https://developer.salesforce.com/docs/einstein/genai/guide/agent-api-get-started.html) in the Agentforce developer documentation to obtain the required credentials:
 
-- **AGENT_ID**: The unique identifier of your Agentforce Agent
+- **AGENT_ID**: The unique identifier (copilotId) of your Agentforce Agent.
 - **CONSUMER_KEY** / **CONSUMER_SECRET**: OAuth credentials from your Salesforce Connected App
 - **MY_DOMAIN_URL**: Your Salesforce org's My Domain URL
 
@@ -34,8 +34,8 @@ Before getting started, you'll need to set up your Salesforce Agentforce Agent. 
 
 Deploy this application to Heroku with one click:
 
-<a href="https://deploy.herokuapps.ai/oauth/deploy?template_url=https://github.com/aagnone-sfhk/agentforce-ui">
-<img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
+<a href="https://deploy.herokuapps.ai?template=https://github.com/aagnone-sfhk/agentforce-ui">
+    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
 </a>
 
 ## Local Development
