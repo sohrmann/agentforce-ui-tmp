@@ -40,7 +40,7 @@ Before getting started, you'll need to set up your Salesforce Agentforce Agent. 
 
 ## 📹 Walkthrough Video
 
-[![Agentforce UI Walkthrough Video](https://i9.ytimg.com/vi_webp/BhsH9scm3yI/mqdefault.webp?v=68c99157&sqp=CLSjpsYG&rs=AOn4CLDQqYJBCPifydFOgxiYCOJTsH8U2Q)]([[https://www.youtube.com/watch?v=StTqXEQ2l-Y](https://www.youtube.com/watch?v=BhsH9scm3yI)](https://www.youtube.com/watch?v=BhsH9scm3yI) "Agentforce UI Walkthrough Video")
+[![Agentforce UI Walkthrough Video](https://i9.ytimg.com/vi_webp/BhsH9scm3yI/mqdefault.webp?v=68c99157&sqp=CLSjpsYG&rs=AOn4CLDQqYJBCPifydFOgxiYCOJTsH8U2Q)](https://www.youtube.com/watch?v=BhsH9scm3yI)
 
 ## Local Development
 
