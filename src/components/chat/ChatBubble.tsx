@@ -43,7 +43,7 @@ export default function ChatBubble({
     closeChat();
   };
 
-  const displayName = agentName || clientEnv.NEXT_PUBLIC_AGENT_NAME;
+  const displayName = agentName || clientEnv.NEXT_PUBLIC_APP_TITLE;
 
   return (
     <>

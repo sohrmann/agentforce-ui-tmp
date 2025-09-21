@@ -5,7 +5,6 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_APP_TITLE: z.string().min(1).default("AI Chat Assistant"),
   NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1).default("Your intelligent AI assistant powered by Agentforce"),
   NEXT_PUBLIC_APP_INTRO_MESSAGE: z.string().min(1).default("Hello! I'm your AI assistant. How can I help you today?"),
-  NEXT_PUBLIC_AGENT_NAME: z.string().min(1).default("Agentforce"),
 });
 
 type ClientEnv = z.infer<typeof clientEnvSchema>;
@@ -17,7 +16,6 @@ function validateClientEnv(): ClientEnv {
       NEXT_PUBLIC_APP_TITLE: process.env.NEXT_PUBLIC_APP_TITLE,
       NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
       NEXT_PUBLIC_APP_INTRO_MESSAGE: process.env.NEXT_PUBLIC_APP_INTRO_MESSAGE,
-      NEXT_PUBLIC_AGENT_NAME: process.env.NEXT_PUBLIC_AGENT_NAME,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
