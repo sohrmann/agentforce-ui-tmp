@@ -6,7 +6,7 @@ A modern Next.js application showcasing a custom chat interface for Salesforce A
 
 Deploy this application to Heroku with one click:
 
-<a href="https://deploy.herokuapps.ai?template=https://github.com/aagnone-sfhk/agentforce-ui">
+<a href="https://deploy.herokuapps.ai?template=https://github.com/aagnone-sfhk/agentforce-ui-tmp">
     <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
 </a>
 
@@ -47,7 +47,7 @@ Before getting started, you'll need to set up your Salesforce Agentforce Agent. 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/aagnone-sfhk/agentforce-ui.git
+git clone https://github.com/aagnone-sfhk/agentforce-ui-tmp.git
 cd agentforce-ui
 ```
 
