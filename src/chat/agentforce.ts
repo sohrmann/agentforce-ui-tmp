@@ -101,7 +101,7 @@ export const newSession = async (agentId?: string) => {
         streamingCapabilities: {
           chunkTypes: ["Text"],
         },
-        bypassUser: true,
+        bypassUser: false,
       };
       
       const { data } = await axios({
